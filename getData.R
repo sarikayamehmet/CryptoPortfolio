@@ -28,18 +28,32 @@ getMarketData <- function(marketName, tickInterval="day"){
   return(df)
 }
 
+#Coin market caps info
+urlMarketCaps <- "https://api.coinmarketcap.com/v1/ticker/?limit=50"
+top50Market <- fromJSON(urlMarketCaps)
+top50Symbols <- top50Market$symbol
+top50MarketNames <- paste0("BTC-", top50Symbols)
+
 #Collect All markets
 url <- "https://bittrex.com/api/v1.1/public/getmarketsummaries"
 webpage2 <- fromJSON(url)
 df2 <- webpage2$result
 marketNames <- df2$MarketName
 BTCMarkets <- marketNames[grepl("BTC-", marketNames)]
+top50BTCMarkets <- marketNames[marketNames %in% top50MarketNames]
 tickList <- c("oneMin","fiveMin", "thirtyMin", "hour","day")
-marketPrices <- getMarketData(BTCMarkets[1], tickList[5])
-for (i in 25:length(BTCMarkets)) {
-  tempDF <- getMarketData(BTCMarkets[i], tickList[5])
+marketPrices <- getMarketData(top50BTCMarkets[1], tickList[5])
+for (i in 2:length(top50BTCMarkets)) {
+  tempDF <- getMarketData(top50BTCMarkets[i], tickList[5])
   marketPrices <- rbind(marketPrices, tempDF)
-  Sys.sleep(3)
+  tempDF <- NULL
 }
 
+#Save Data
+marketPrices$T <- as.Date(marketPrices$T)
+marketPrices$MarketName <- as.factor(marketPrices$MarketName)
+write.csv(marketPrices, file = "marketPrices.csv", row.names = F)
 
+
+  
+  
