@@ -55,5 +55,5 @@ marketPrices$MarketName <- as.factor(marketPrices$MarketName)
 write.csv(marketPrices, file = "marketPrices.csv", row.names = F)
 
 
-  
+
   

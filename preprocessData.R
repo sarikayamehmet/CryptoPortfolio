@@ -1,4 +1,8 @@
-library(lubridate)
+library(highcharter)
+library(lubridate) # ymd
+library(dplyr) # group_by
+library(tidyr) #complete
+
 #Read market data
 df <- read.csv("marketPrices.csv")
 df$T <- as.Date(df$T)
@@ -18,10 +22,6 @@ percentageCalc <- function(marketName){
 list_of_dataframes <- lapply(unique(df$MarketName), function(x) percentageCalc(x))
 prepData <- bind_rows(list_of_dataframes, .id = "ID")
 
-library(highcharter)
-library(lubridate) # ymd
-library(dplyr) # group_by
-
 prepData$T <- datetime_to_timestamp(ymd(prepData$T)) # its easy to convert to a date
 series_asset <- prepData %>%
   arrange(T) %>% 
@@ -37,3 +37,33 @@ highchart() %>%
   hc_subtitle(text="2014-2019 icin degerler",align="center") %>%
   hc_add_theme(hc_theme_elementary())
 
+#Simplify data to quick test
+# We will only use ETH, LTC, XRP, XLM, USDT for BTC market as Multi-armed bandit approach
+baseMarkets <- c("BTC-ETH", "BTC-LTC", "BTC-XRP", "BTC-XLM", "USDT-BTC")
+baseData <- prepData[prepData$MarketName %in% baseMarkets,]
+# ETH -> "2015-08-15"
+# LTC -> "2014-03-10"
+# XRP -> "2014-12-23"
+# XLM -> "2015-11-19"
+# USDT -> "2015-12-15"
+# So we take "2015-12-15" as min date to arbitrage test
+baseData <- baseData[baseData$T >= "2015-12-15",]
+#Fill missing
+USDData <- baseData[baseData$MarketName=="USDT-BTC",] %>%
+  mutate(T = as.Date(T)) %>%
+  complete(T = seq.Date(min(T), max(T), by="day")) %>%
+  #group_by(ID, MarketName) %>%
+  fill(ID,MarketName,O,C,H,L,V,BV,Mean,Reward)
+
+XLMData <- baseData[baseData$MarketName=="BTC-XLM",] %>%
+  mutate(T = as.Date(T)) %>%
+  complete(T = seq.Date(min(T), max(T), by="day")) %>%
+  #group_by(ID, MarketName) %>%
+  fill(ID,MarketName,O,C,H,L,V,BV,Mean,Reward)
+
+#Merge all in a bundle
+trainData <- baseData[baseData$MarketName!="USDT-BTC",]
+trainData <- trainData[trainData$MarketName!="BTC-XLM",]
+trainData <- rbind(trainData, XLMData, USDData)
+#1235 day for each asset
+write.csv(trainData, file = "trainData.csv", row.names = F)
