@@ -41,6 +41,7 @@ df2 <- webpage2$result
 marketNames <- df2$MarketName
 BTCMarkets <- marketNames[grepl("BTC-", marketNames)]
 top50BTCMarkets <- marketNames[marketNames %in% top50MarketNames]
+top50BTCMarkets <- c("BTC-ETH","BTC-XRP","BTC-LTC","BTC-XLM","USDT-BTC")
 tickList <- c("oneMin","fiveMin", "thirtyMin", "hour","day")
 marketPrices <- getMarketData(top50BTCMarkets[1], tickList[5])
 for (i in 2:length(top50BTCMarkets)) {
