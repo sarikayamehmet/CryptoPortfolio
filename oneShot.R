@@ -1,5 +1,8 @@
 library(rvest)
 library(jsonlite)
+library(lubridate) # ymd
+library(dplyr) # group_by
+library(tidyr) #complete
 
 #Generic collector
 getMarketData <- function(marketName, tickInterval="day"){
