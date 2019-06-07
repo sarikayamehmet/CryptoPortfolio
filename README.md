@@ -18,10 +18,10 @@ Cryptocurrency &amp; AltCoins Portfolio Management with Reinforcement Learning
 
 ## Future Works
 
-1. Use Proximal Policy Optimization (PPO) for modelling,
+1. Use Proximal Policy Optimization (PPO) for modelling
 2. Use gru, lstm for neural network structure
 3. Do feature engineering for better results (Add features below)
-  1. Moving Average (Both Simple and Exponential):
+  * Moving Average (Both Simple and Exponential):
     - MA5
     - MA10
     - MA20 
@@ -29,7 +29,7 @@ Cryptocurrency &amp; AltCoins Portfolio Management with Reinforcement Learning
     - MA100
     - MA200
     
-  2. Technical indicators
+  * Technical indicators
     - RSI(14)
     - STOCH(9,6)
     - STOCHRSI(14)
