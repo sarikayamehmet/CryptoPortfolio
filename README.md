@@ -42,5 +42,8 @@ Cryptocurrency &amp; AltCoins Portfolio Management with Reinforcement Learning
     - ROC
     - WilliamsR
     - BullBear(13)
+    
+  * BTC Dominance
+  * BTC hash rate
   
   
